@@ -55,5 +55,11 @@ namespace Predictiv
             }
             return result;
         }
+
+        public void Dispose()
+        {
+            input.Close();
+            input.Dispose();
+        }
     }
 }

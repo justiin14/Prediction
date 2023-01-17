@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.btnLoadImg = new System.Windows.Forms.Button();
             this.btnPredict = new System.Windows.Forms.Button();
             this.btnStore = new System.Windows.Forms.Button();
@@ -114,6 +114,7 @@
             this.btnDecode.TabIndex = 5;
             this.btnDecode.Text = "Decode";
             this.btnDecode.UseVisualStyleBackColor = true;
+            this.btnDecode.Click += new System.EventHandler(this.btnDecode_Click);
             // 
             // btnSaveDecoded
             // 
@@ -123,6 +124,7 @@
             this.btnSaveDecoded.TabIndex = 6;
             this.btnSaveDecoded.Text = "Save decoded";
             this.btnSaveDecoded.UseVisualStyleBackColor = true;
+            this.btnSaveDecoded.Click += new System.EventHandler(this.btnSaveDecoded_Click);
             // 
             // textBoxErrorScaleFactor
             // 
@@ -135,7 +137,7 @@
             // 
             // btnShowHistogram
             // 
-            this.btnShowHistogram.Location = new System.Drawing.Point(476, 521);
+            this.btnShowHistogram.Location = new System.Drawing.Point(261, 490);
             this.btnShowHistogram.Name = "btnShowHistogram";
             this.btnShowHistogram.Size = new System.Drawing.Size(133, 28);
             this.btnShowHistogram.TabIndex = 8;
@@ -145,7 +147,7 @@
             // 
             // textBoxHistogramScaleFactor
             // 
-            this.textBoxHistogramScaleFactor.Location = new System.Drawing.Point(476, 482);
+            this.textBoxHistogramScaleFactor.Location = new System.Drawing.Point(261, 451);
             this.textBoxHistogramScaleFactor.Name = "textBoxHistogramScaleFactor";
             this.textBoxHistogramScaleFactor.Size = new System.Drawing.Size(133, 22);
             this.textBoxHistogramScaleFactor.TabIndex = 10;
@@ -155,7 +157,7 @@
             // comboBoxHistogramImage
             // 
             this.comboBoxHistogramImage.FormattingEnabled = true;
-            this.comboBoxHistogramImage.Location = new System.Drawing.Point(476, 427);
+            this.comboBoxHistogramImage.Location = new System.Drawing.Point(261, 396);
             this.comboBoxHistogramImage.Name = "comboBoxHistogramImage";
             this.comboBoxHistogramImage.Size = new System.Drawing.Size(133, 24);
             this.comboBoxHistogramImage.TabIndex = 11;
@@ -163,7 +165,7 @@
             // comboBoxPredictor
             // 
             this.comboBoxPredictor.FormattingEnabled = true;
-            this.comboBoxPredictor.Location = new System.Drawing.Point(162, 404);
+            this.comboBoxPredictor.Location = new System.Drawing.Point(43, 396);
             this.comboBoxPredictor.Name = "comboBoxPredictor";
             this.comboBoxPredictor.Size = new System.Drawing.Size(113, 24);
             this.comboBoxPredictor.TabIndex = 12;
@@ -171,7 +173,7 @@
             // labelPredictor
             // 
             this.labelPredictor.AutoSize = true;
-            this.labelPredictor.Location = new System.Drawing.Point(159, 385);
+            this.labelPredictor.Location = new System.Drawing.Point(40, 377);
             this.labelPredictor.Name = "labelPredictor";
             this.labelPredictor.Size = new System.Drawing.Size(64, 16);
             this.labelPredictor.TabIndex = 13;
@@ -180,7 +182,7 @@
             // labelHistogramImage
             // 
             this.labelHistogramImage.AutoSize = true;
-            this.labelHistogramImage.Location = new System.Drawing.Point(485, 404);
+            this.labelHistogramImage.Location = new System.Drawing.Point(270, 373);
             this.labelHistogramImage.Name = "labelHistogramImage";
             this.labelHistogramImage.Size = new System.Drawing.Size(113, 16);
             this.labelHistogramImage.TabIndex = 14;
@@ -189,7 +191,7 @@
             // labelHistogramScaleFactor
             // 
             this.labelHistogramScaleFactor.AutoSize = true;
-            this.labelHistogramScaleFactor.Location = new System.Drawing.Point(504, 463);
+            this.labelHistogramScaleFactor.Location = new System.Drawing.Point(289, 432);
             this.labelHistogramScaleFactor.Name = "labelHistogramScaleFactor";
             this.labelHistogramScaleFactor.Size = new System.Drawing.Size(81, 16);
             this.labelHistogramScaleFactor.TabIndex = 15;
@@ -224,17 +226,17 @@
             // 
             // chart1
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(671, 368);
+            chartArea3.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.chart1.Legends.Add(legend3);
+            this.chart1.Location = new System.Drawing.Point(443, 349);
             this.chart1.Name = "chart1";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Histograma";
-            this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(415, 229);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Histograma";
+            this.chart1.Series.Add(series3);
+            this.chart1.Size = new System.Drawing.Size(752, 304);
             this.chart1.TabIndex = 19;
             this.chart1.Text = "chart1";
             // 

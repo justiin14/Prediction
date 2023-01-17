@@ -103,21 +103,51 @@ namespace Predictiv
             return result;
         }
 
-        internal static int[] GetPixelAppearances(int[,] originalMatrix)
+        internal static int[] GetPixelAppearances(int[,] matrix)
         {
-            int[] appearances = new int[511];
-            for (int i = 0; i < 510; i++)
+            int[] appearances = new int[512];
+            for (int i = 0; i < 512; i++)
             {
                 appearances[i] = 0;
             }
 
-            for(int i = 0; i < originalMatrix.GetLength(0); i++)
-                for(int j=0;j<originalMatrix.GetLength(1); j++)
+            for(int i = 0; i < matrix.GetLength(0); i++)
+                for(int j=0;j<matrix.GetLength(1); j++)
                 {
-                    appearances[originalMatrix[i, j]]++;
+                    appearances[matrix[i, j] + 255]++;
                 }
 
             return appearances;
+        }
+
+        internal static void ComputePredictionAndOriginalMatrixAfterDecoding(int[,] errorMatrix, int[,] predictionMatrix, int[,] originalMatrix, int predictor)
+        {
+            for(int i = 0; i <errorMatrix.GetLength(0); i++)
+            {
+                for(int j=0;j<errorMatrix.GetLength(1); j++)
+                {
+                    if (i == 0 && j == 0)
+                    {
+                        predictionMatrix[i, j] = 128;
+                        originalMatrix[i,j] = errorMatrix[i,j] + predictionMatrix[i,j];
+                    }
+                    else if (i == 0 && j > 0)
+                    {
+                        predictionMatrix[i,j] = originalMatrix[i,j - 1];
+                        originalMatrix[i,j] = errorMatrix[i,j] + predictionMatrix[i,j];
+                    }
+                    else if (i > 0 && j == 0)
+                    {
+                        predictionMatrix[i,j] = originalMatrix[i - 1,j];
+                        originalMatrix[i,j] = errorMatrix[i,j] + predictionMatrix[i,j];
+                    }
+                    else
+                    {
+                        predictionMatrix[i, j] = Predictor(originalMatrix, i, j, predictor);
+                        originalMatrix[i, j] = errorMatrix[i, j] + predictionMatrix[i, j];
+                    }
+                }
+            }
         }
     }
 }

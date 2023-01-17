@@ -45,6 +45,12 @@ namespace Predictiv
                 WriteBit((value >> i) & 1);
             }
         }
+
+        public void Dispose()
+        {
+            output.Close();
+            output.Dispose();
+        }
     }
 }
 

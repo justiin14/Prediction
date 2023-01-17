@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Predictiv
 {
     public partial class Form1 : Form
     {
-        Bitmap originalImg, errorImg;
-        int[,] originalMatrix, predictionMatrix, errorMatrix;
-        string pathEncodedImage;
+        Bitmap originalImg, errorImg, decodedImg;
+        int[,] originalMatrix, predictionMatrix, errorMatrix, originalMatrixDecoded, predictionMatrixDecoded, errorMatrixDecoded;
+        int[] headerBytes;
+        int predictorDecoded;
+        string pathOriginalImage, pathEncodedImage, outputPath;
 
         public Form1()
         {
@@ -18,7 +20,13 @@ namespace Predictiv
             originalMatrix = new int[256, 256];
             predictionMatrix = new int[256, 256];
             errorMatrix = new int[256, 256];
+            originalMatrixDecoded = new int[256, 256];
+            predictionMatrixDecoded = new int[256, 256];
+            errorMatrixDecoded = new int[256, 256];
             errorImg = new Bitmap(256, 256);
+            decodedImg = new Bitmap(256, 256);
+
+            headerBytes = new int[1078];
         }
 
         //-------------------------VISUAL THINGS------------------------------------------
@@ -68,7 +76,9 @@ namespace Predictiv
                 string imageFile = openFileDialog.FileName;
                 pictureBoxOriginalImage.Image = Image.FromFile(imageFile);
                 originalImg = new Bitmap(imageFile);
+                pathOriginalImage = imageFile;
 
+                Console.WriteLine(headerBytes.Length);
                 Color pixel;
                 int value;
                 for (int i = 0; i < originalImg.Height; i++)
@@ -83,6 +93,45 @@ namespace Predictiv
             }
         }
 
+        private void btnPredict_Click(object sender, EventArgs e)
+        {
+            predictionMatrix = Matrix.ComputePredictionMatrix(originalMatrix, comboBoxPredictor.SelectedIndex);
+            errorMatrix = Matrix.ComputeErrorMatrix(originalMatrix, predictionMatrix);
+        }
+
+        private void btnStore_Click(object sender, EventArgs e)
+        {
+            string fileName = pathOriginalImage.Split('\\').Last();
+            string path = fileName + "[" + comboBoxPredictor.SelectedIndex.ToString() + "].pre";
+            BitWriter bitWriter = new BitWriter(path);
+
+            byte[] allBytes = File.ReadAllBytes(pathOriginalImage);
+
+            //header
+            for (int i = 0; i < 1078; i++)
+            {
+                headerBytes[i] = allBytes[i];
+                bitWriter.WriteNBits(8, allBytes[i]);
+            }
+
+            //predictor pe 4b
+            bitWriter.WriteNBits(4, (uint)comboBoxPredictor.SelectedIndex);
+
+            //valorile matricii de eroare
+            for (int i = 0; i < 256; i++)
+            {
+                for (int j = 0; j < 256; j++)
+                {
+                    bitWriter.WriteNBits(9, (uint)(errorMatrix[i, j] + 255));
+                }
+            }
+
+            //empty the buffer
+            bitWriter.WriteNBits(7, 1);
+            bitWriter.Dispose();
+        }
+
+        //------------------------------------DISPLAY BUTTONS------------------------------------------------
         private void btnShowErrorMatrix_Click(object sender, EventArgs e)
         {
             int value;
@@ -97,13 +146,10 @@ namespace Predictiv
                     Color color = Color.FromArgb(255, value, value, value);
 
                     errorImg.SetPixel(i, j, color);
-                    Console.Write(color+" ");
                 }
-                Console.WriteLine();
             }
                 
             pictureBoxErrorMatrix.Image = errorImg;
-            pictureBoxErrorMatrix.Refresh();
         }
 
         private void btnShowHistogram_Click(object sender, EventArgs e)
@@ -111,16 +157,24 @@ namespace Predictiv
             chart1.Series.Clear();
             int[] values = new int[511];
 
+            for(int i = 0; i < 256; i++)
+            {
+                for(int j = 0; j < 256; j++)
+                {
+                    Console.WriteLine(originalMatrix[i,j] + "-" + errorMatrix[i,j]);
+                }
+            }
+
             switch (comboBoxHistogramImage.SelectedIndex)
             {
                 case 0:
                     values = Matrix.GetPixelAppearances(originalMatrix);
                     break;
                 case 1:
-                    values = Matrix.GetPixelAppearances(predictionMatrix);
+                    values = Matrix.GetPixelAppearances(errorMatrix);
                     break;
                 case 2:
-                    values = Matrix.GetPixelAppearances(errorMatrix);
+                    values = Matrix.GetPixelAppearances(originalMatrixDecoded);
                     break;
             }
 
@@ -128,29 +182,13 @@ namespace Predictiv
             double histogramScaleFactor = GetScaleFactor(textBoxHistogramScaleFactor);
             for (int i = 0; i < values.Length; i++)
             {
-                chart1.Series["Histograma"].Points.AddXY(i-255, (int)(values[i]*histogramScaleFactor));
+                chart1.Series["Histograma"].Points.AddXY(i - 255, (int)(values[i] * histogramScaleFactor));
             }
-            
-        }
-
-        private void btnStore_Click(object sender, EventArgs e)
-        {
 
         }
 
-        private void btnPredict_Click(object sender, EventArgs e)
-        {
-            predictionMatrix = Matrix.ComputePredictionMatrix(originalMatrix, comboBoxPredictor.SelectedIndex);
-            errorMatrix = Matrix.ComputeErrorMatrix(originalMatrix, predictionMatrix);
 
-            //for(int i = 0; i < originalMatrix.GetLength(0); i++)
-            //{
-            //    for(int j=0; j<originalMatrix.GetLength(1); j++)
-            //    {
-            //        Console.WriteLine(originalMatrix[i,j] +"-"+predictionMatrix[i,j]+"="+errorMatrix[i,j]);
-            //    }
-            //}
-        }
+        //-----------------------------------DECODE BUTTONS--------------------------------------------------
 
         private void btnLoadEncoded_Click(object sender, EventArgs e)
         {
@@ -160,13 +198,71 @@ namespace Predictiv
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 pathEncodedImage = openFileDialog.FileName;
-                ReadEncodedFileContent(pathEncodedImage);
             }
         }
 
-        private void ReadEncodedFileContent(string pathEncodedImage)
+
+        private void btnDecode_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            BitReader bitReader = new BitReader(pathEncodedImage);
+
+            for (int i = 0; i < 1078; i++)
+            {
+                headerBytes[i] = bitReader.ReadNBits(8);
+            }
+
+            predictorDecoded = bitReader.ReadNBits(4);
+
+            for (int i = 0; i < 256; i++)
+            {
+                for (int j = 0; j < 256; j++)
+                {
+                    int value = bitReader.ReadNBits(9);
+                    errorMatrixDecoded[i,j] = value - 255;
+                }
+            }
+
+            Matrix.ComputePredictionAndOriginalMatrixAfterDecoding(errorMatrixDecoded, predictionMatrixDecoded, originalMatrixDecoded, predictorDecoded);
+
+            
+            //display image on third picturebox
+            for (int i = 0; i < originalMatrixDecoded.GetLength(0); i++)
+            {
+                for (int j = 0; j < originalMatrixDecoded.GetLength(1); j++)
+                {
+                    int value = originalMatrixDecoded[i,j];
+                    if (value < 0) value = 0;
+                    else if (value > 255) value = 255;
+                    Color color = Color.FromArgb(255, value, value, value);
+
+                    decodedImg.SetPixel(i, j, color);
+                }
+            }
+
+            pictureBoxDecodedImage.Image = decodedImg;
+        }
+
+        private void btnSaveDecoded_Click(object sender, EventArgs e)
+        {
+            outputPath = pathEncodedImage.Split('\\').Last() + ".decoded.bmp";
+
+            BitWriter bitWriter = new BitWriter(outputPath);
+
+            for (int i = 0; i < headerBytes.Length; i++)
+            {
+                bitWriter.WriteNBits(8, (uint)headerBytes[i]);
+            }
+
+            for (int i = 0; i < originalMatrixDecoded.GetLength(0); i++)
+            {
+                for (int j = 0; j < originalMatrixDecoded.GetLength(1); j++)
+                {
+                    bitWriter.WriteNBits(8, (uint)(originalMatrixDecoded[i, j]));
+                }
+            }
+
+            bitWriter.WriteNBits(7, 1);
+            bitWriter.Dispose();
         }
     }
 }
