@@ -28,6 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.btnLoadImg = new System.Windows.Forms.Button();
             this.btnPredict = new System.Windows.Forms.Button();
             this.btnStore = new System.Windows.Forms.Button();
@@ -46,9 +49,11 @@
             this.pictureBoxOriginalImage = new System.Windows.Forms.PictureBox();
             this.pictureBoxErrorMatrix = new System.Windows.Forms.PictureBox();
             this.pictureBoxDecodedImage = new System.Windows.Forms.PictureBox();
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginalImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxErrorMatrix)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDecodedImage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnLoadImg
@@ -69,6 +74,7 @@
             this.btnPredict.TabIndex = 1;
             this.btnPredict.Text = "Predict";
             this.btnPredict.UseVisualStyleBackColor = true;
+            this.btnPredict.Click += new System.EventHandler(this.btnPredict_Click);
             // 
             // btnStore
             // 
@@ -78,6 +84,7 @@
             this.btnStore.TabIndex = 2;
             this.btnStore.Text = "Store";
             this.btnStore.UseVisualStyleBackColor = true;
+            this.btnStore.Click += new System.EventHandler(this.btnStore_Click);
             // 
             // btnShowErrorMatrix
             // 
@@ -87,6 +94,7 @@
             this.btnShowErrorMatrix.TabIndex = 3;
             this.btnShowErrorMatrix.Text = "Show error matrix";
             this.btnShowErrorMatrix.UseVisualStyleBackColor = true;
+            this.btnShowErrorMatrix.Click += new System.EventHandler(this.btnShowErrorMatrix_Click);
             // 
             // btnLoadEncoded
             // 
@@ -133,6 +141,7 @@
             this.btnShowHistogram.TabIndex = 8;
             this.btnShowHistogram.Text = "Show histogram";
             this.btnShowHistogram.UseVisualStyleBackColor = true;
+            this.btnShowHistogram.Click += new System.EventHandler(this.btnShowHistogram_Click);
             // 
             // textBoxHistogramScaleFactor
             // 
@@ -191,6 +200,7 @@
             this.pictureBoxOriginalImage.Location = new System.Drawing.Point(98, 26);
             this.pictureBoxOriginalImage.Name = "pictureBoxOriginalImage";
             this.pictureBoxOriginalImage.Size = new System.Drawing.Size(256, 256);
+            this.pictureBoxOriginalImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxOriginalImage.TabIndex = 16;
             this.pictureBoxOriginalImage.TabStop = false;
             // 
@@ -199,6 +209,7 @@
             this.pictureBoxErrorMatrix.Location = new System.Drawing.Point(443, 26);
             this.pictureBoxErrorMatrix.Name = "pictureBoxErrorMatrix";
             this.pictureBoxErrorMatrix.Size = new System.Drawing.Size(256, 256);
+            this.pictureBoxErrorMatrix.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxErrorMatrix.TabIndex = 17;
             this.pictureBoxErrorMatrix.TabStop = false;
             // 
@@ -207,8 +218,25 @@
             this.pictureBoxDecodedImage.Location = new System.Drawing.Point(797, 26);
             this.pictureBoxDecodedImage.Name = "pictureBoxDecodedImage";
             this.pictureBoxDecodedImage.Size = new System.Drawing.Size(256, 256);
+            this.pictureBoxDecodedImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxDecodedImage.TabIndex = 18;
             this.pictureBoxDecodedImage.TabStop = false;
+            // 
+            // chart1
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chart1.Legends.Add(legend1);
+            this.chart1.Location = new System.Drawing.Point(671, 368);
+            this.chart1.Name = "chart1";
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Histograma";
+            this.chart1.Series.Add(series1);
+            this.chart1.Size = new System.Drawing.Size(415, 229);
+            this.chart1.TabIndex = 19;
+            this.chart1.Text = "chart1";
             // 
             // Form1
             // 
@@ -233,12 +261,14 @@
             this.Controls.Add(this.btnStore);
             this.Controls.Add(this.btnPredict);
             this.Controls.Add(this.btnLoadImg);
+            this.Controls.Add(this.chart1);
             this.Name = "Form1";
             this.Text = "Prediction";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginalImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxErrorMatrix)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDecodedImage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -264,6 +294,7 @@
         private System.Windows.Forms.PictureBox pictureBoxOriginalImage;
         private System.Windows.Forms.PictureBox pictureBoxErrorMatrix;
         private System.Windows.Forms.PictureBox pictureBoxDecodedImage;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
     }
 }
 
